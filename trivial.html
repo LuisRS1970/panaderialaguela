@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Trivial de Asturias</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e8f0e8;
+            text-align: center;
+        }
+
+        .contenedor {
+            background: white;
+            width: 450px;
+            margin: 40px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        #info {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            margin: 8px 0;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .correcto {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .incorrecto {
+            background-color: #F44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="contenedor">
+    <div id="info">
+        <span>Puntos: <span id="puntos">0</span></span>
+        <span>Tiempo: <span id="tiempo">10</span>s</span>
+    </div>
+
+    <h2 id="pregunta"></h2>
+    <div id="respuestas"></div>
+
+    <button id="siguiente" onclick="siguientePregunta()" disabled>
+        Siguiente pregunta
+    </button>
+</div>
+
+<script>
+const preguntas = [
+    {
+        texto: "¿Cuál es la capital de Asturias?",
+        opciones: ["Gijón", "Oviedo", "Avilés", "Mieres"],
+        correcta: 1
+    },
+    {
+        texto: "¿Qué mar baña la costa asturiana?",
+        opciones: ["Mediterráneo", "Cantábrico", "Atlántico", "Adriático"],
+        correcta: 1
+    },
+    {
+        texto: "¿Cómo se llama el dulce típico relleno de nuez?",
+        opciones: ["Carbayón", "Casadiella", "Frixuelo", "Ensaimada"],
+        correcta: 1
+    },
+    {
+        texto: "¿Qué bebida es típica de Asturias?",
+        opciones: ["Vino", "Sidra", "Cava", "Licor café"],
+        correcta: 1
+    },
+    {
+        texto: "¿Qué queso es típico de Asturias?",
+        opciones: ["Manchego", "Cabrales", "Idiazábal", "Mahón"],
+        correcta: 1
+    },
+    {
+        texto: "¿Cómo se llaman las fiestas tradicionales asturianas?",
+        opciones: ["Romerías", "Fallas", "Ferias", "Verbenas"],
+        correcta: 0
+    },
+    {
+        texto: "¿Qué ciudad es conocida por sus carbayones?",
+        opciones: ["Gijón", "Oviedo", "Llanes", "Avilés"],
+        correcta: 1
+    },
+    {
+        texto: "¿Cómo se llama el idioma propio de Asturias?",
+        opciones: ["Gallego", "Euskera", "Asturiano", "Catalán"],
+        correcta: 2
+    },
+    {
+        texto: "¿Qué parque nacional se encuentra en Asturias?",
+        opciones: ["Ordesa", "Doñana", "Picos de Europa", "Teide"],
+        correcta: 2
+    },
+    {
+        texto: "¿Qué pan se elabora con trigo tradicional asturiano?",
+        opciones: ["Pan de centeno", "Pan de escanda", "Pan integral", "Pan candeal"],
+        correcta: 1
+    }
+];
+
+let indice = 0;
+let puntos = 0;
+let tiempo = 10;
+let temporizador;
+
+function cargarPregunta() {
+    document.getElementById("siguiente").disabled = true;
+    tiempo = 30;
+    document.getElementById("tiempo").textContent = tiempo;
+
+    const pregunta = preguntas[indice];
+    document.getElementById("pregunta").textContent = pregunta.texto;
+
+    const respuestas = document.getElementById("respuestas");
+    respuestas.innerHTML = "";
+
+    pregunta.opciones.forEach((opcion, i) => {
+        const boton = document.createElement("button");
+        boton.textContent = opcion;
+        boton.onclick = () => comprobarRespuesta(boton, i);
+        respuestas.appendChild(boton);
+    });
+
+    iniciarTemporizador();
+}
+
+function comprobarRespuesta(boton, seleccion) {
+    detenerTemporizador();
+    const botones = document.querySelectorAll("#respuestas button");
+    botones.forEach(b => b.disabled = true);
+
+    if (seleccion === preguntas[indice].correcta) {
+        boton.classList.add("correcto");
+        puntos++;
+        document.getElementById("puntos").textContent = puntos;
+    } else {
+        if (boton) boton.classList.add("incorrecto");
+        botones[preguntas[indice].correcta].classList.add("correcto");
+    }
+
+    document.getElementById("siguiente").disabled = false;
+}
+
+function siguientePregunta() {
+    indice++;
+    if (indice < preguntas.length) {
+        cargarPregunta();
+    } else {
+        mostrarResultadoFinal();
+    }
+}
+
+function iniciarTemporizador() {
+    temporizador = setInterval(() => {
+        tiempo--;
+        document.getElementById("tiempo").textContent = tiempo;
+        if (tiempo === 0) {
+            detenerTemporizador();
+            comprobarRespuesta(null, -1);
+        }
+    }, 1000);
+}
+
+function detenerTemporizador() {
+    clearInterval(temporizador);
+}
+
+function mostrarResultadoFinal() {
+    document.querySelector(".contenedor").innerHTML = `
+        <h2>¡Trivial finalizado!</h2>
+        <p>Has conseguido <strong>${puntos}</strong> de ${preguntas.length} puntos</p>
+        <button onclick="location.reload()">Jugar otra vez</button>
+    `;
+}
+
+cargarPregunta();
+</script>
+
+</body>
+</html>
+    <meta charset="UTF-8">
